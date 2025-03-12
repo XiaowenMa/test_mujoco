@@ -9,4 +9,4 @@ mocap.data_vel[frame] --  qvel(34,)
 Customized gym env supporting qpos+qvel as observation space(Box(35+34,)), action space Box((28,))
 
 ## test.xml:
-humanoid xml, nbody=35, njnt = 13, number of actuators 28
+humanoid xml
