@@ -30,3 +30,12 @@ humanoid xml
 
 ## Pytorch Implementation of DeepMimic
 
+Requirements: environment.yml
+
+Example training usage: python DRL.py
+
+This will run a sinlge rollout+10epochs update, the result is not ideal, but this shows the frameworkd is working.
+
+## Demos
+
+Demos and mocap data replay under mujoco_copy/demos
