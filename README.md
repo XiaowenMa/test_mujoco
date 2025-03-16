@@ -1,19 +1,3 @@
-## MocapDM:
-Class for mocap data
-
-mocap = MocapDM()
-
-mocap.load_mocap(path)
-
-mocap.data_config[frame][joint ind] -- qpos(35,)
-
-mocap.data_vel[frame] --  qvel(34,)
-
-## MyEnv: 
-Customized gym env supporting qpos+qvel as observation space(Box(35+34,)), action space Box((28,))
-
-## test.xml:
-humanoid xml
 
 <!-- ## vis:
     env = MyEnv() --change render mode to "human"
@@ -40,3 +24,20 @@ This will run a sinlge rollout+10epochs update, the result is not ideal, but thi
 ## Demos
 
 Demos and mocap data replay under mujoco_copy/demos
+
+## MocapDM:
+Class for mocap data
+
+mocap = MocapDM()
+
+mocap.load_mocap(path)
+
+mocap.data_config[frame][joint ind] -- qpos(35,)
+
+mocap.data_vel[frame] --  qvel(34,)
+
+## MyEnv: 
+Customized gym env supporting qpos+qvel as observation space(Box(35+34,)), action space Box((28,))
+
+## test.xml:
+humanoid xml
