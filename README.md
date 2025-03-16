@@ -1,4 +1,4 @@
-<!-- ## MocapDM:
+## MocapDM:
 Class for mocap data
 
 mocap = MocapDM()
@@ -15,7 +15,7 @@ Customized gym env supporting qpos+qvel as observation space(Box(35+34,)), actio
 ## test.xml:
 humanoid xml
 
-## vis:
+<!-- ## vis:
     env = MyEnv() --change render mode to "human"
 
     loop over data:
@@ -26,7 +26,8 @@ humanoid xml
 
       env.render()
 
-      ind+=1 -->
+      ind+=1
+      -->
 
 ## Pytorch Implementation of DeepMimic
 
