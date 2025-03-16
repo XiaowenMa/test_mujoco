@@ -1,4 +1,4 @@
-name: test_mujoco
+name: deepmimic_revisited_mujoco
 channels:
   - conda-forge  
   - defaults
@@ -9,3 +9,5 @@ dependencies:
   - pyquaternion
   - scipy
   - pillow
+  - pytorch
+  - imageio

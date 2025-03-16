@@ -1,4 +1,4 @@
-## MocapDM:
+<!-- ## MocapDM:
 Class for mocap data
 
 mocap = MocapDM()
@@ -26,4 +26,7 @@ humanoid xml
 
       env.render()
 
-      ind+=1
+      ind+=1 -->
+
+## Pytorch Implementation of DeepMimic
+

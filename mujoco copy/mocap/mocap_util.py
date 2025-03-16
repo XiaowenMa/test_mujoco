@@ -19,14 +19,38 @@ BODY_DEFS = ["root", "chest", "neck", "right_hip", "right_knee",
              "right_ankle", "right_shoulder", "right_elbow", "right_wrist", "left_hip", 
              "left_knee", "left_ankle", "left_shoulder", "left_elbow", "left_wrist"]
 
-PARAMS_KP_KD = {"chest": [1000, 100], "neck": [100, 10], "right_shoulder": [400, 40], "right_elbow": [300, 30], 
-        "left_shoulder": [400, 40], "left_elbow": [300, 30], "right_hip": [500, 50], "right_knee": [500, 50], 
-        "right_ankle": [400, 40], "left_hip": [500, 50], "left_knee": [500, 50], "left_ankle": [400, 40]}
+PARAMS_KP_KD = {"chest": [100, 10], "neck": [10, 1], "right_shoulder": [40, 4], "right_elbow": [30, 3], 
+        "left_shoulder": [40, 4], "left_elbow": [30, 3], "right_hip": [50, 5], "right_knee": [50, 5], 
+        "right_ankle": [40, 4], "left_hip": [50, 5], "left_knee": [50, 5], "left_ankle": [40, 4]}
+
+# PARAMS_KP_KD = {"chest": [100, 10], "neck": [100, 10], "right_shoulder": [400, 40], "right_elbow": [300, 30], 
+#         "left_shoulder": [400, 40], "left_elbow": [300, 30], "right_hip": [500, 50], "right_knee": [500, 50], 
+#         "right_ankle": [400, 40], "left_hip": [500, 50], "left_knee": [500, 50], "left_ankle": [400, 40]}
 
 JOINT_WEIGHT = {"root": 1, "chest": 0.5, "neck": 0.3, "right_hip": 0.5, 
                 "right_knee": 0.3, "right_ankle": 0.2, "right_shoulder": 0.3, "right_elbow": 0.2, 
                 "right_wrist": 0.0, "left_hip": 0.5, "left_knee": 0.3, "left_ankle": 0.2, 
                 "left_shoulder": 0.3, "left_elbow": 0.2, "left_wrist": 0.0}
+
+END_EFFECTORS = ["left_ankle_x","right_ankle_x","left_ankle_y","right_ankle_y","left_ankle_z","right_ankle_z","left_elbow","right_elbow"]
+
+# joint: [mujoco_start,mujuco_end), [pybullet_start,pybullet_end)], ordered by mujoco xml
+MUJOCO_PYBULLET_MAP = {
+    "root":[(0,7),(0,7)],
+    "chest":[(7,10),(7,10)],
+    "neck":[(10,13),(10,13)],
+    "right_shoulder": [(13,16),(20,23)],
+    "right_elbow":[(16,17),(23,24)],
+    "left_shoulder":[(17,20),(31,34)],
+    "left_elbow":[(20,21),(34,35)],
+    "right_hip":[(21,24),(13,16)],
+    "right_knee":[(24,25),(16,17)],
+    "right_ankle":[(25,28),(17,20)],
+    "left_hip":[(28,31),(24,27)],
+    "left_knee":[(31,32),(27,28)],
+    "left_ankle":[(32,25),(28,31)]
+}
+
 
 def align_rotation(rot): # return in wxyz
     q_input = Quaternion(rot[0], rot[1], rot[2], rot[3])
@@ -75,26 +99,3 @@ def calc_diff_from_quaternion(orien_0, orien_1):
     # q_diff =  q_1 * q_0.conjugate
     angle = q_diff.angle
     return angle
-# 
-# def xyzrot2quat(xyzrot):
-#     sx, cx = math.sin(xyzrot[0]), math.cos(xyzrot[0])
-#     sy, cy = math.sin(xyzrot[1]), math.cos(xyzrot[1])
-#     sz, cz = math.sin(xyzrot[2]), math.cos(xyzrot[2])
-# 
-#     R_x = np.array([[1.0, 0.0, 0.0],
-#                     [0.0, cx, -sx],
-#                     [0.0, sx, cx]])
-# 
-#     R_y = np.array([[cy, 0.0, sy],
-#                     [0.0, 1, 0.0],
-#                     [-sy, 0.0, cy]])
-# 
-#     R_z = np.array([[cz, -sz, 0.0],
-#                     [sz, cz, 0.0],
-#                     [0.0, 0.0, 1.0]])
-#     
-#     rot = np.matmul( np.matmul(R_x, R_y), R_z)
-# 
-#     quat = Quaternion(matrix=rot)
-# 
-#     return  quat.elements
