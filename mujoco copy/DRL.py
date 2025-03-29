@@ -5,25 +5,26 @@ import gymnasium as gym
 from customEnv import MyEnv
 from TrajData import TrajData
 # from ReplayBuffer import ReplayBuffer
+from tqdm import tqdm
 
 class DRL:
     def __init__(self):
 
-        self.n_envs = 4 # for testing
-        self.n_steps = 500 # about 1 sim sec
-        # TODO: check model's qpos+qvel
-        self.n_obs = 35+34 # model.qvel+model.qpos for now, suppose we only observe pos and vel
+        self.n_envs = 16 
+        self.n_steps = 1000 # about 1 sim sec
+        self.n_obs = 35+34+160+1 # qpos+qvel+cinert+1(phase)
         self.n_actions = 28 # 28 actuators, each action modeled as a gaussian
 
         # self.envs = gym.vector.SyncVectorEnv([lambda: gym.make("CartPole-v1")  for _ in range(self.n_envs)])
         self.envs = gym.vector.SyncVectorEnv([lambda: MyEnv("test.xml") for _ in range(self.n_envs)])
 
-        # self.traj_datas = []
         # self.replay_buffer = ReplayBuffer()
         self.traj_data = TrajData(self.n_steps,self.n_envs,self.n_obs,self.n_actions, 0,0) # placeholder for ind, maybe no longer in use
   
         self.agent = PPOAgent(self.n_obs, n_actions=self.n_actions, a_lambda=.95, gamma = .99)  
-        self.optimizer = Adam(self.agent.parameters(), lr=1e-3)
+        # self.optimizer = Adam(self.agent.parameters(), lr=1e-3)
+        self.actor_optimizer = Adam(self.agent.policy.parameters(), lr=1e-4)
+        self.critic_optimizer = Adam(self.agent.value.parameters(),lr=1e-4)
         # self.writer = SummaryWriter(log_dir=f'runs/{self.agent.name}')
 
 
@@ -64,24 +65,19 @@ class DRL:
 
         for _ in range(epochs):
 
-            # # sample batch from replay buffer
-            # samples = self.replay_buffer.sample()
+            policy_loss,value_loss = self.agent.get_loss(self.traj_data)
 
-            # # for each sample, update value network and policy network
-            # for state, action, reward, next_state, done, traj_ind, t in samples:
-            #     traj_data = self.traj_datas[traj_ind]
-            #     loss = self.agent.get_loss(traj_data)
-
-
-            loss = self.agent.get_loss(self.traj_data)
+            self.actor_optimizer.zero_grad()
+            self.critic_optimizer.zero_grad()
+            value_loss.backward(retain_graph = True)
+            policy_loss.backward()
             
-
-            self.optimizer.zero_grad()
-            loss.backward()
-            self.optimizer.step()
+            self.actor_optimizer.step()
+            self.critic_optimizer.step()
         
         self.traj_data.detach()
 if __name__=="__main__":
+
     drl = DRL()
     drl.rollout(0)
     # print(drl.traj_data.states.shape)

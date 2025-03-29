@@ -36,3 +36,7 @@ class TrajData:
         self.returns = deepcopy(self.rewards)
         for t in reversed(range(self.n_steps-1)):
             self.returns[t] += self.returns[t+1] * self.not_dones[t] * gamma
+
+        # normalize returns
+        self.returns = (self.returns - self.returns.mean()) / (self.returns.std() + 1e-8)
+
