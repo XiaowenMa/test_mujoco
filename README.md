@@ -12,6 +12,7 @@
 
       ind+=1
       -->
+![Image](https://github.com/user-attachments/assets/2ace57ce-3467-48e4-a7eb-fcad580216e0)
 
 ## Pytorch Implementation of DeepMimic
 
