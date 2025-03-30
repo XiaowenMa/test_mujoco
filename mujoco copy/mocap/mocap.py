@@ -69,24 +69,24 @@ class MocapDM(object):
         self.durations = durations
 
     def calc_rot_vel(self, seg_0, seg_1, dura):
-        # q_0 = Quaternion(seg_0[0], seg_0[1], seg_0[2], seg_0[3]) # target from segment k
-        # q_1 = Quaternion(seg_1[0], seg_1[1], seg_1[2], seg_1[3]) # source  from segment k-1
+        q_0 = Quaternion(seg_0[0], seg_0[1], seg_0[2], seg_0[3])
+        q_1 = Quaternion(seg_1[0], seg_1[1], seg_1[2], seg_1[3])
 
-        # # # q_diff =  q_0.conjugate * q_1
-        # # # # q_diff =  q_1 * q_0.conjugate
-        # # # axis = q_diff.axis
-        # # # angle = q_diff.angle
+        # q_diff =  q_0.conjugate * q_1
+        # # q_diff =  q_1 * q_0.conjugate
+        # axis = q_diff.axis
+        # angle = q_diff.angle
         
-        # # # tmp_diff = angle/dura * axis
-        # # # diff_angular = [tmp_diff[0], tmp_diff[1], tmp_diff[2]]
+        # tmp_diff = angle/dura * axis
+        # diff_angular = [tmp_diff[0], tmp_diff[1], tmp_diff[2]]
 
-        # # # return diff_angular
-        # q_diff = q_0*q_1.conjugate
-        # diff_angular = 2*q_diff/dura
-        # return [diff_angular[1],diff_angular[2],diff_angular[3]] # vector part
-        euler_target = euler_from_quaternion(np.array([seg_0[1],seg_0[2],seg_0[3],seg_0[0]]),axes='rxyz')
-        euler_curr = euler_from_quaternion(np.array([seg_1[1],seg_1[2],seg_1[3],seg_1[0]]),axes='rxyz')
-        return list((np.array(euler_target)-np.array(euler_curr))/dura)
+        # return diff_angular
+        q_diff = q_0*q_1.conjugate.normalised
+        angular_vel = 2*q_diff/dura
+        return [angular_vel[1],angular_vel[2],angular_vel[3]]
+        # euler_target = euler_from_quaternion(np.array([seg_0[1],seg_0[2],seg_0[3],seg_0[0]]),axes='rxyz')
+        # euler_curr = euler_from_quaternion(np.array([seg_1[1],seg_1[2],seg_1[3],seg_1[0]]),axes='rxyz')
+        # return list((np.array(euler_target)-np.array(euler_curr))/dura)
 
     def convert_raw_data(self):
         self.data_vel = []

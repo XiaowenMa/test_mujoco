@@ -19,9 +19,9 @@ BODY_DEFS = ["root", "chest", "neck", "right_hip", "right_knee",
              "right_ankle", "right_shoulder", "right_elbow", "right_wrist", "left_hip", 
              "left_knee", "left_ankle", "left_shoulder", "left_elbow", "left_wrist"]
 
-PARAMS_KP_KD = {"chest": [100, 10], "neck": [10, 1], "right_shoulder": [40, 4], "right_elbow": [30, 3], 
-        "left_shoulder": [40, 4], "left_elbow": [30, 3], "right_hip": [50, 5], "right_knee": [50, 5], 
-        "right_ankle": [40, 4], "left_hip": [50, 5], "left_knee": [50, 5], "left_ankle": [40, 4]}
+PARAMS_KP_KD = {"chest": [1000, 100], "neck": [100, 10], "right_shoulder": [400, 40], "right_elbow": [300, 30], 
+        "left_shoulder": [400, 40], "left_elbow": [300, 30], "right_hip": [500, 50], "right_knee": [500, 50], 
+        "right_ankle": [400, 40], "left_hip": [500, 50], "left_knee": [500, 50], "left_ankle": [400, 40]}
 
 # PARAMS_KP_KD = {"chest": [100, 10], "neck": [100, 10], "right_shoulder": [400, 40], "right_elbow": [300, 30], 
 #         "left_shoulder": [400, 40], "left_elbow": [300, 30], "right_hip": [500, 50], "right_knee": [500, 50], 
@@ -32,7 +32,7 @@ JOINT_WEIGHT = {"root": 1, "chest": 0.5, "neck": 0.3, "right_hip": 0.5,
                 "right_wrist": 0.0, "left_hip": 0.5, "left_knee": 0.3, "left_ankle": 0.2, 
                 "left_shoulder": 0.3, "left_elbow": 0.2, "left_wrist": 0.0}
 
-END_EFFECTORS = ["left_ankle_x","right_ankle_x","left_ankle_y","right_ankle_y","left_ankle_z","right_ankle_z","left_elbow","right_elbow"]
+END_EFFECTORS = ["left_ankle","right_ankle","left_wrist","right_wrist"]
 
 # joint: [mujoco_start,mujuco_end), [pybullet_start,pybullet_end)], ordered by mujoco xml
 MUJOCO_PYBULLET_MAP = {

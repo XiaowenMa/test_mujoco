@@ -37,7 +37,7 @@ mocap.data_config[frame][joint ind] -- qpos(35,)
 mocap.data_vel[frame] --  qvel(34,)
 
 ## MyEnv: 
-Customized gym env supporting qpos+qvel as observation space(Box(35+34,)), action space Box((28,))
+Customized gym env supporting qpos+qvel+cinert+1(phase factor) as observation space(Box(35+34+160+1,)), action space Box((28,))
 
 ## test.xml:
 humanoid xml
