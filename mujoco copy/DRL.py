@@ -6,6 +6,7 @@ from customEnv import MyEnv
 from TrajData import TrajData
 # from ReplayBuffer import ReplayBuffer
 from tqdm import tqdm
+import numpy as np
 
 class DRL:
     def __init__(self):
@@ -15,7 +16,6 @@ class DRL:
         self.n_obs = 35+34+160+1 # qpos+qvel+cinert+1(phase)
         self.n_actions = 28 # 28 actuators, each action modeled as a gaussian
 
-        # self.envs = gym.vector.SyncVectorEnv([lambda: gym.make("CartPole-v1")  for _ in range(self.n_envs)])
         self.envs = gym.vector.SyncVectorEnv([lambda: MyEnv("test.xml") for _ in range(self.n_envs)])
 
         # self.replay_buffer = ReplayBuffer()
@@ -29,19 +29,16 @@ class DRL:
 
 
     def rollout(self, i):
-        # traj_ind = len(self.traj_datas)
-        # traj_data = TrajData(self.n_steps,self.n_envs,self.n_obs,self.n_actions,traj_ind)
+
         obs, _ = self.envs.reset() # obs, reset_info
         obs = torch.Tensor(obs)
 
         for t in range(self.n_steps):
-            # PPO doesnt use gradients here, but REINFORCE and VPG do.
             with torch.no_grad() if self.agent.name == 'PPO' else torch.enable_grad():
                 actions, probs = self.agent.get_action(obs)
             # print(actions.shape)
             log_probs = probs.log_prob(actions).sum(-1)
 
-            # for i in range(5): #frame_skip = 5
             next_obs, rewards, done, truncated, infos = self.envs.step(actions.numpy())
             done = done | truncated  # episode doesnt truncate till t = 500, so never
             self.traj_data.store(t, obs, actions, rewards, log_probs, done)
@@ -51,10 +48,20 @@ class DRL:
 
         self.traj_data.calc_returns()
         # self.traj_datas.append(traj_data)
-        print("avg reward: ", self.traj_data.rewards.mean())
+        # print("avg reward: ", self.traj_data.rewards.mean())
+        self.avg_reward = self.traj_data.rewards.mean()
 
         # self.writer.add_scalar("Reward", self.traj_data.rewards.mean(), i)
         # self.writer.flush()
+
+    def get_avg_loss(self):
+        return self.avg_policy_loss,self.avg_value_loss
+    
+    def get_avg_reward(self):
+        return self.avg_reward
+    
+    def get_avg_sim_steps(self):
+        return self.avg_sim_steps
 
 
     def update(self):
@@ -62,10 +69,15 @@ class DRL:
         # A primary benefit of PPO is that it can train for
         # many epochs on 1 rollout without going unstable
         epochs = 10 if self.agent.name == 'PPO' else 1
+        epoch_policy_loss = []
+        epoch_value_loss = []
 
         for _ in range(epochs):
 
             policy_loss,value_loss = self.agent.get_loss(self.traj_data)
+            # print(f"policy loss: {policy_loss.item()}, value loss: {value_loss.item()}")
+            epoch_policy_loss.append(policy_loss.item())
+            epoch_value_loss.append(value_loss.item())
 
             self.actor_optimizer.zero_grad()
             self.critic_optimizer.zero_grad()
@@ -76,9 +88,38 @@ class DRL:
             self.critic_optimizer.step()
         
         self.traj_data.detach()
-if __name__=="__main__":
+        self.avg_policy_loss = np.mean(epoch_policy_loss)
+        self.avg_value_loss = np.mean(epoch_value_loss)
 
+from torch.utils.tensorboard import SummaryWriter
+
+if __name__ == "__main__":
+    # Initialize the DRL agent
     drl = DRL()
-    drl.rollout(0)
-    # print(drl.traj_data.states.shape)
-    drl.update()
+
+    # Initialize SummaryWriter
+    writer = SummaryWriter(log_dir="runs/drl_experiment_0330_1")
+
+    # Example: Log some scalar values (e.g., reward, loss, etc.)
+    for episode in tqdm(range(100)):  # Assuming you run for 100 episodes
+        drl.rollout(episode)  # Collect trajectory or interaction data
+        reward = drl.get_avg_reward()  # Assume you have a method to get the current reward
+
+        drl.update()
+
+        policy_loss,value_loss = drl.get_avg_loss()  # Assume you have a method to get the loss
+
+        # Log the reward and loss for each episode
+        writer.add_scalar('Reward/episode', reward, episode)
+        writer.add_scalar('Policy_Loss/episode', policy_loss, episode)
+        writer.add_scalar('Value_Loss/episode', value_loss, episode)
+
+
+    # Close the writer after training
+    writer.close()
+# if __name__=="__main__":
+
+#     drl = DRL()
+#     drl.rollout(0)
+#     # print(drl.traj_data.states.shape)
+#     drl.update()

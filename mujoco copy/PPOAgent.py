@@ -80,7 +80,6 @@ class PPOAgent(nn.Module):
         # return loss
     
 
-            # todo: student code here
         policy_loss = []
         value_loss = []
         T = traj_data.n_steps
@@ -120,7 +119,7 @@ class PPOAgent(nn.Module):
         loss = policy_loss+value_loss  # replace
         # print(loss)
         # end student code
-        print(value_loss.item())
+        # print(value_loss.item())
         return policy_loss,value_loss
 
 
